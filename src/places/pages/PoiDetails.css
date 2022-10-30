@@ -1,0 +1,10 @@
+.content {
+  display: flex;
+  justify-content: space-around !important;
+}
+
+.buttons {
+  height: 2rem;
+  width: 8rem;
+  margin-top: 1.5rem;
+}

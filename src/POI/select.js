@@ -5,6 +5,14 @@ import FormControl from "@mui/material/FormControl";
 import NativeSelect from "@mui/material/NativeSelect";
 
 function Select(props) {
+  const handleSelectChange = (event) => {
+    if (event.target.name === "Type of places") {
+      localStorage.setItem("places", event.target.value);
+    } else if (event.target.name === "Type of transport") {
+      localStorage.setItem("transport", event.target.value);
+    }
+  };
+
   return (
     <Box sx={{ minWidth: 120, margin: 3 }}>
       <FormControl fullWidth>
@@ -12,6 +20,7 @@ function Select(props) {
           {props.name}
         </InputLabel>
         <NativeSelect
+          onChange={handleSelectChange}
           defaultValue={30}
           inputProps={{
             name: props.name,
@@ -19,11 +28,13 @@ function Select(props) {
           }}
         >
           {props.option.map((item) => {
-            return <option value={item}>{item}</option>;
+            return (
+              <option value={item}>
+                {/* {localStorage.setItem("transport", item)} */}
+                {item}
+              </option>
+            );
           })}
-          {/* <option value="drive">drive</option>
-          <option value="walk">walk</option>
-          <option value="public transport">public transport</option> */}
         </NativeSelect>
       </FormControl>
     </Box>

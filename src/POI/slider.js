@@ -5,7 +5,7 @@ import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import Slider from "@mui/material/Slider";
 import MuiInput from "@mui/material/Input";
-import AssistWalkerIcon from '@mui/icons-material/AssistWalker';
+import AssistWalkerIcon from "@mui/icons-material/AssistWalker";
 const Input = styled(MuiInput)`
   width: 42px;
 `;
@@ -15,10 +15,13 @@ function InputSlider() {
 
   const handleSliderChange = (event, newValue) => {
     setValue(newValue);
+    console.log(newValue);
+    localStorage.setItem("distance", newValue + "000");
   };
 
   const handleInputChange = (event) => {
     setValue(event.target.value === "" ? "" : Number(event.target.value));
+    console.log("Test", event.target.value);
   };
 
   const handleBlur = () => {
