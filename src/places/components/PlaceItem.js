@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-
+import axios from "axios";
 import Card from "../../shared/components/UIElements/Card";
 import Button from "../../shared/components/FormElements/Button";
 import Modal from "../../shared/components/UIElements/Modal";
@@ -10,13 +10,27 @@ import { AuthContext } from "../../shared/context/auth-context";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import "./PlaceItem.css";
 
+
 const PlaceItem = (props) => {
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const auth = useContext(AuthContext);
   const [showMap, setShowMap] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
-  const openMapHandler = () => setShowMap(true);
+  const openMapHandler = async (address) => {
+    const response = await axios.get(
+      `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+        address
+      )}&key=AIzaSyC17TTbMqVmSDt_5ZcZeGXoU1Y9CTx7at0`
+    );
+    const coordinates = response.data.results[0].geometry.location;
+
+    console.log(coordinates);
+
+    setShowMap(true);
+  };
+
+
 
   const closeMapHandler = () => setShowMap(false);
 
@@ -94,7 +108,12 @@ const PlaceItem = (props) => {
             <p>{props.description}</p>
           </div>
           <div className="place-item__actions">
-            <Button inverse onClick={openMapHandler}>
+            <Button
+              inverse
+              onClick={() => {
+                openMapHandler();
+              }}
+            >
               VIEW ON MAP
             </Button>
             {auth.userId === props.creatorId && (
@@ -107,7 +126,11 @@ const PlaceItem = (props) => {
               </Button>
             )}
 
-            <Button to={`/places/details/${props.coordinates}`} >Show details</Button>
+            <Button
+              to={`/places/details/${props.address}`}
+            >
+              Show details
+            </Button>
           </div>
         </Card>
       </li>
