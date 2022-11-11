@@ -34,8 +34,8 @@ function DetailsPoi() {
     }
   };
 
-  const showId = async (data, lat, lon) => {
-    console.log(data);
+  const showId = async (id, lat, lon) => {
+    console.log(id);
     console.log(lat);
     console.log(lon);
     try {
@@ -56,7 +56,6 @@ function DetailsPoi() {
           `&traffic_model=${traffic_model}` +
           `&departure_time=${departure_time}`
       );
-
       console.log(responseData);
     } catch (err) {
       console.log(err);
