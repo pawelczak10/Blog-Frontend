@@ -18,7 +18,7 @@ function DetailsPoi() {
   const [showRouting, setShowRouting] = useState(false);
   const [loadingData, setLoadingData] = useState(false);
   const [datails, setDetails] = useState([]);
-  const [test, setTest] = useState();
+  const [route, setRoute] = useState();
   let origin;
   const address = useParams().address; // here we get coordinates
 
@@ -27,7 +27,7 @@ function DetailsPoi() {
       const response = await axios.get(
         `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
           address
-        )}&key=TUTAJ WPISZ SWOJ KEY Z GOOGLE MAPS `
+        )}&key=AIzaSyC17TTbMqVmSDt_5ZcZeGXoU1Y9CTx7at0`
       );
       const coordinates = response.data.results[0].geometry.location;
       origin = `${coordinates.lat},${coordinates.lng}`;
@@ -35,17 +35,18 @@ function DetailsPoi() {
     }
     fetchData();
   }, []);
-  const cancelDeleteHandler = () => {
+  const exitHandler = () => {
     setShowConfirmModal(false);
   };
 
-  const fetchUsers = async () => {
+  const fetchPOI = async () => {
     const origin = localStorage.getItem("coordinates"); // here we get place
     try {
       const responseData = await sendRequest(
         `https://www.overpass-api.de/api/interpreter?data=[out:json];node[amenity=${place}](around:${distance},${origin});out%20meta;`
       );
       return responseData.elements.map((item) => {
+        console.log(responseData);
         setDetails((current) => [
           ...current,
           { name: item.tags.name, id: item.id, lat: item.lat, lon: item.lon },
@@ -57,14 +58,10 @@ function DetailsPoi() {
     }
   };
 
-  const showId = async (id, lat, lon) => {
+  const showRoute = async (id, lat, lon) => {
     setShowConfirmModal(true);
 
     const origin = localStorage.getItem("coordinates"); // here we get place
-    console.log(origin);
-    console.log(id);
-    console.log(lat);
-    console.log(lon);
     try {
       const BASE_URL = "https://api.distancematrix.ai";
       const TOKEN = "eiYGl6W4ug7GE82Ai6xnI04wzIXGK";
@@ -82,7 +79,7 @@ function DetailsPoi() {
           `&departure_time=${departure_time}`
       );
       console.log(responseData.rows[0].elements[0].distance.text);
-      setTest(responseData);
+      setRoute(responseData);
       setShowRouting(true);
     } catch (err) {
       console.log(err);
@@ -114,7 +111,7 @@ function DetailsPoi() {
           name="Type of places"
           option={["restaurant", "bar", "school", "fast_food", "bank"]}
         />
-        <Button danger type="button" onClick={fetchUsers}>
+        <Button danger type="button" onClick={fetchPOI}>
           SHOW DETAILS
         </Button>
         {loadingData &&
@@ -127,7 +124,7 @@ function DetailsPoi() {
                   danger
                   type="button"
                   onClick={() => {
-                    showId(element.id, element.lat, element.lon);
+                    showRoute(element.id, element.lat, element.lon);
                   }}
                 >
                   show route
@@ -143,22 +140,21 @@ function DetailsPoi() {
               footerClass="place-item__modal-actions"
               footer={
                 <React.Fragment>
-                  <Button danger onClick={cancelDeleteHandler}>
+                  <Button danger onClick={exitHandler}>
                     Exit
-                    {console.log(test)}
                   </Button>
                 </React.Fragment>
               }
             >
-              Your target address is {test.destination_addresses}.
+              Your target address is {route.destination_addresses}.
               <br />
-              Your starting location is {test.origin_addresses}.
+              Your starting location is {route.origin_addresses}.
               <br />
               <br />
               The distance to the target is
-              {test.rows[0].elements[0].distance.text}.
+              {route.rows[0].elements[0].distance.text}.
               <br />
-              You will be there in {test.rows[0].elements[0].duration.text}.
+              You will be there in {route.rows[0].elements[0].duration.text}.
             </Modal>
           </>
         )}
