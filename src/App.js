@@ -15,7 +15,6 @@ import MainNavigation from "./shared/components/Navigation/MainNavigation";
 import { AuthContext } from "./shared/context/auth-context";
 import { useAuth } from "./shared/hooks/auth-hook";
 import DetailsPoi from "./places/pages/PoiDetails";
-import Map from "./places/pages/MapAdventure";
 
 const App = () => {
   const { token, login, logout, userId } = useAuth();
@@ -34,9 +33,7 @@ const App = () => {
         <Route path="/places/details/:address">
           <DetailsPoi />
         </Route>
-        <Route path="/places/map" exact>
-          <Map />
-        </Route>
+    
         <Route path="/places/new" exact>
           <NewPlace />
         </Route>
