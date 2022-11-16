@@ -11,7 +11,7 @@ const Input = styled(MuiInput)`
 `;
 
 function InputSlider() {
-  const [value, setValue] = React.useState(2);
+  const [value, setValue] = React.useState(1);
 
   const handleSliderChange = (event, newValue) => {
     setValue(newValue);
