@@ -13,6 +13,7 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import IconButton from "@mui/material/IconButton";
+import imga from './arow.png'
 
 function DetailsPoi() {
   const { sendRequest } = useHttpClient();
@@ -27,6 +28,7 @@ function DetailsPoi() {
   const [markerss, setMarkerss] = useState([]);
   const [datails, setDetails] = useState([]);
   const [route, setRoute] = useState();
+  const [showRoutee, setShowRoutee] = useState(false);
   let origin;
   const address = useParams().address; // here we get coordinates
   var initialMarker;
@@ -65,9 +67,7 @@ function DetailsPoi() {
           { name: item.tags.name, id: item.id, lat: item.lat, lon: item.lon },
         ]);
         setLoadingData(true);
-        // setMarkerss(responseData);
-        console.log("mojaLokacja?", localStorage.getItem("coordinates"));
-
+  
         const marker = new window.google.maps.Marker({
           position: { lat: item.lat, lng: item.lon },
           map: mapka,
@@ -93,41 +93,33 @@ function DetailsPoi() {
           (function (marker) {
             return function () {
               infowindow.close(mapka, marker);
-              console.log("initial", initialMarker);
               setDetails([]);
-              mapka.setCenter({ lat: item.lat, lng: item.lon });
-              console.log("markeryyy", markerss);
               for (var i = 0; i < markerss.length; i++) {
                 markerss[i].setMap(null);
               }
-              console.log("markeryyy2", markerss);
-
               setMarkerss([]);
-              console.log("markeryyy3", markerss);
-
               locations.push({
+                Name: item.tags.name,
                 Lat: item.lat,
                 Long: item.lon,
               });
-              console.log(marker.getPosition());
               localStorage.setItem("coordinates", `${item.lat}, ${item.lon}`);
               printRoute(locations);
               mapka.setCenter({ lat: item.lat, lng: item.lon });
               mapka.setZoom(16);
+              setShowRoutee(true);
             };
           })(marker)
         );
-
         markerss.push(marker);
-        console.log("mark", markerss);
       });
     } catch (err) {
       console.log(err);
     }
   };
 
-  function printRoute(l) {
-    console.log(locations);
+  function printRoute() {
+    //console.log(locations);
 
     var directionsService = new window.google.maps.DirectionsService();
     if (directionsDisplay != null) {
@@ -141,12 +133,11 @@ function DetailsPoi() {
     });
     directionsDisplay.setMap(mapka);
 
-    var marker, i;
     var request = {
       travelMode: window.google.maps.TravelMode.WALKING,
     };
     directionsDisplay.setDirections({ routes: [] });
-    for (i = 0; i < locations.length; i++) {
+    for (var i = 0; i < locations.length; i++) {
       if (i == 0)
         request.origin = { lat: locations[i].Lat, lng: locations[i].Long };
       else if (i == locations.length - 1)
@@ -208,7 +199,6 @@ function DetailsPoi() {
         },
         zoom: 16,
       });
-      console.log("mapa", mapaaa);
 
       initialMarker = new window.google.maps.Marker({
         position: {
@@ -218,18 +208,39 @@ function DetailsPoi() {
         map: mapaaa,
       });
       markerss.push(initialMarker);
-      console.log("initial", initialMarker);
       setMapka(mapaaa);
       const loc = [
         {
+          Name: "Start",
           Lat: parseFloat(array[0], 10),
           Long: parseFloat(array[1], 10),
         },
       ];
       setLocations(loc);
-      console.log("lokacje", loc);
     }
   }, [map]);
+
+
+  function changeBackgroundYellow(e,element) {
+    e.target.style.background = 'yellow';
+   
+    markerss.forEach(i => {
+      if(i.getPosition().lat()==element.lat && i.getPosition().lng()==element.lon) 
+        i.setIcon({
+          url: "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png",
+        });
+    }
+  )};
+
+  function changeBackgroundWhite(e,element) {
+    e.target.style.background = 'white';
+    markerss.forEach(i => {
+      if(i.getPosition().lat()==element.lat&& i.getPosition().lng()==element.lon) 
+        i.setIcon({
+          url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+        });
+    }
+  )};
 
   return (
     <>
@@ -265,41 +276,56 @@ function DetailsPoi() {
         </Box>
       </div>
       <div className="rightPanel">
-        <Box
+        {/* <Box
           display="flex"
           flexDirection={"column"}
           alignItems="center"
           justifyContent={"center"}
           margin="auto"
-          marginTop={10}
-          marginRight={2}
-          padding={3}
           
+          marginRight={2}
+          //padding={3}
           borderRadius={5}
           sx={{
             overflow: "auto",
             maxHeight: 800,
 
-            background: "white",
-          }}
-        >
+            background: "transparent",
+          }} */}
+        
+           <List
+                 display="flex"
+                 flexDirection={"column"}
+                 sx={{
+                  overflow: "auto",
+                   width: "100%",
+                   maxHeight: 800,
+                   background: "transparent",
+                   margin:"auto",
+                   marginTop:"65px",               
+                   position: "relative"
+       
+                 }}
+               >
           {loadingData &&
             datails.map((element, index) => {
-              console.log(element);
+             // console.log(element);
               return (
-                <List
-                  subheader
-                  sx={{
-                    width: "100%",
-                    maxHeight: 800,
-
-                    position: "relative",
-                    marginLeft: "1rem",
-                  }}
-                >
+               
                   <ListItem
                     key={element}
                     disableGutters
+                    onMouseOver={(e) => changeBackgroundYellow(e,element)}
+                    onMouseOut={(e) => changeBackgroundWhite(e,element)}
+                    sx={{  background: "white",
+                    margin:"auto",
+                    marginTop:"10px",
+                   // marginRight={2},
+                   
+                    padding:"5px",
+                    borderRadius:"7px"}}
+
+
                     secondaryAction={
                       <IconButton
                         type="button"
@@ -312,11 +338,13 @@ function DetailsPoi() {
                       </IconButton>
                     }
                   >
-                    <ListItemText primary={`${element.name}`} />
+                    <ListItemText   sx={{  paddingLeft:"4px"}} 
+                    primary={`${element.name}`} />
                   </ListItem>
-                </List>
+               
               );
             })}
+             </List>
           {showRouting && (
             <>
               <Modal
@@ -343,13 +371,106 @@ function DetailsPoi() {
               </Modal>
             </>
           )}
-          ;
-        </Box>
+          
+        {/* </Box> */}
       </div>
+      <div className="routePanel">
+
+      
+            <List
+                  subheader
+                
+                  sx={{
+                   // width: "100%",
+                    maxWidth: "180px",
+                    background: "transparent",
+                    margin:"auto",
+                    marginTop:"10px",
+                   // marginRight={2},
+                    padding:"3px",
+                    borderRadius:"7px",
+                    position: "relative",
+                    marginLeft: "1rem",
+                    display: "inline-block",
+                    whiteSpace: "nowrap"
+                  }}
+                >
+
+        {showRoutee && locations.map((element) => {
+              console.log("routeGotDamnit",element);
+              return (
+               <>
+                  <ListItem
+
+                    key={element.lat}
+                    disableGutters
+                    sx={{
+                      margin:"5px",
+                      background: "white",
+                      display: "inline-block",
+                      alignItems:"center",
+                      justifyContent:"center",
+                      borderRadius:"7px",
+                      borderStyle: "solid"
+                    }}
+                    >
+                  
+                    <ListItemText   sx={{  paddingLeft:"4px", alignItems:"center",
+          justifyContent:"center"}} 
+                    >{`${element.Name}`}</ListItemText>
+                  </ListItem>
+                  <ListItem
+                     disableGutters
+                     sx={{
+                        width:"40px",
+
+                       display: "inline-block",
+              
+                       alignItems:"bottom",
+                     
+                     }}
+                  
+                  >
+                <img src={imga} alt="d" sx={{height: "40px"}}/>
+                 </ListItem>
+                </>
+                  )
+                 
+                  
+                  })}
+                  { locations==undefined ? "as":(locations.length<=1 ? "sds": (
+                    console.log(locations,"lokacjeeee"),
+                   <ListItem
+
+
+disableGutters
+sx={{
+  margin:"5px",
+  background: "white",
+  borderStyle: "solid",
+  borderColor:"red",
+  display: "inline-block",
+  alignItems:"center",
+  justifyContent:"center",
+  borderRadius:"7px",
+  borderStyle: "solid"
+}}
+>
+<ListItemText   sx={{  paddingLeft:"4px", alignItems:"center",
+          justifyContent:"center"}} 
+                    >Export to phone</ListItemText>
+                
+
+</ListItem>))}
+
+              </List>
+
+      
+                </div>
       <div
         id="googleMap"
         className="map"
-        style={{ width: "100%", height: "860px" }}
+        style={{ width: "100%", height: "100%" }}
         ref={setMap}
         // className={`map ${props.className}`}
         // style={props.style}

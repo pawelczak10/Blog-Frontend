@@ -24,6 +24,16 @@
   max-height: 300px;
 }
 
+.routePanel {
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+}
+
+
 .map {
   position: absolute;
   top: 0;
