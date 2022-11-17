@@ -15,6 +15,7 @@ import MainNavigation from "./shared/components/Navigation/MainNavigation";
 import { AuthContext } from "./shared/context/auth-context";
 import { useAuth } from "./shared/hooks/auth-hook";
 import DetailsPoi from "./places/pages/PoiDetails";
+
 const App = () => {
   const { token, login, logout, userId } = useAuth();
 
@@ -32,18 +33,14 @@ const App = () => {
         <Route path="/places/details/:address">
           <DetailsPoi />
         </Route>
-
+    
         <Route path="/places/new" exact>
           <NewPlace />
         </Route>
         <Route path="/places/:placeId">
           <UpdatePlace />
         </Route>
-        <Route path="/places/:placeId">
-          <UpdatePlace />
-        </Route>
-
-        <Redirect to="/" />
+          <Redirect to="/" />
       </Switch>
     );
   } else {

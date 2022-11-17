@@ -29,7 +29,7 @@ function Select(props) {
         >
           {props.option.map((item) => {
             return (
-              <option value={item}>
+              <option value={item} key={item}>
                 {/* {localStorage.setItem("transport", item)} */}
                 {item}
               </option>
