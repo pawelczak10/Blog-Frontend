@@ -30,8 +30,8 @@ function DetailsPoi() {
   const [route, setRoute] = useState();
   const [showRoutee, setShowRoutee] = useState(false);
   const [routeListUpdate, setrouteListUpdate] = useState(false);
-
   const address = useParams().address; // here we get coordinates
+
   var directionsDisplay;
 
   useEffect(() => {
@@ -62,8 +62,8 @@ function DetailsPoi() {
 
       console.log(responseData);
       setrouteListUpdate(false);
-
       responseData.elements.map((item) => {
+
         setDetails((current) => [
           ...current,
           { name: item.tags.name, id: item.id, lat: item.lat, lon: item.lon },
@@ -95,6 +95,7 @@ function DetailsPoi() {
           "dblclick",
           (function (marker) {
             return function () {
+
               setrouteListUpdate(true);
               infowindow.close(mapka, marker);
               locations.push({
@@ -202,6 +203,7 @@ function DetailsPoi() {
       });
 
       var initialMarker = new window.google.maps.Marker({
+
         position: {
           lat: parseFloat(array[0], 10),
           lng: parseFloat(array[1], 10),
@@ -341,6 +343,7 @@ function DetailsPoi() {
                     marginTop: "10px",
                     padding: "5px",
                     borderRadius: "7px",
+
                   }}
                   secondaryAction={
                     <IconButton
@@ -483,5 +486,30 @@ function DetailsPoi() {
     </>
   );
 }
+function Map() {
+  const [map, setMap] = useState(0);
 
+  useEffect(() => {
+    if (map !== 0) {
+      console.log(map);
+      const mapaaa = new window.google.maps.Map(map, {
+        center: { lat: 51.110437, lng: 17.035019 },
+        zoom: 14,
+      });
+      const marker = new window.google.maps.Marker({
+        position: { lat: 51.109792, lng: 17.054004 },
+        map: mapaaa,
+      });
+    }
+  }, [map]);
+  return (
+    <div
+      id="googleMap"
+      style={{ width: "100%", height: "600px" }}
+      ref={setMap}
+      // className={`map ${props.className}`}
+      // style={props.style}
+    ></div>
+  );
+}
 export default DetailsPoi;
