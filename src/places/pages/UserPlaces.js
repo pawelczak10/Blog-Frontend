@@ -6,32 +6,32 @@ import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import { useHttpClient } from '../../shared/hooks/http-hook';
 
-const UserPlaces = () => {
+function UserPlaces() {
   const [loadedPlaces, setLoadedPlaces] = useState();
-  const { isLoading, error, sendRequest, clearError } = useHttpClient();
+  const {
+    isLoading, error, sendRequest, clearError,
+  } = useHttpClient();
 
-  const userId = useParams().userId;
+  const { userId } = useParams();
 
   useEffect(() => {
     const fetchPlaces = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5000/api/places/user/${userId}`
+          `http://localhost:5000/api/places/user/${userId}`,
         );
         setLoadedPlaces(responseData.places);
-      } catch (err) {}
+      } catch (err) { /* empty */ }
     };
     fetchPlaces();
   }, [sendRequest, userId]);
 
-  const placeDeletedHandler = deletedPlaceId => {
-    setLoadedPlaces(prevPlaces =>
-      prevPlaces.filter(place => place.id !== deletedPlaceId)
-    );
+  const placeDeletedHandler = (deletedPlaceId) => {
+    setLoadedPlaces((prevPlaces) => prevPlaces.filter((place) => place.id !== deletedPlaceId));
   };
 
   return (
-    <React.Fragment>
+    <>
       <ErrorModal error={error} onClear={clearError} />
       {isLoading && (
         <div className="center">
@@ -41,8 +41,8 @@ const UserPlaces = () => {
       {!isLoading && loadedPlaces && (
         <PlaceList items={loadedPlaces} onDeletePlace={placeDeletedHandler} />
       )}
-    </React.Fragment>
+    </>
   );
-};
+}
 
 export default UserPlaces;
