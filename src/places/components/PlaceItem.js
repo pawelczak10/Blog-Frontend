@@ -98,7 +98,7 @@ const PlaceItem = (props) => {
           {isLoading && <LoadingSpinner asOverlay />}
           <div className="place-item__image">
             <img
-              src={`http://localhost:5000/${props.image}`}
+              src={`https://tripaccount.blob.core.windows.net/avatars/${props.image}`}
               alt={props.title}
             />
           </div>
