@@ -1,15 +1,15 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
-import InputLabel from "@mui/material/InputLabel";
-import FormControl from "@mui/material/FormControl";
-import NativeSelect from "@mui/material/NativeSelect";
+import * as React from 'react';
+import Box from '@mui/material/Box';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import NativeSelect from '@mui/material/NativeSelect';
 
 function Select(props) {
   const handleSelectChange = (event) => {
-    if (event.target.name === "Type of places") {
-      localStorage.setItem("places", event.target.value);
-    } else if (event.target.name === "Type of transport") {
-      localStorage.setItem("transport", event.target.value);
+    if (event.target.name === 'Type of places') {
+      localStorage.setItem('places', event.target.value);
+    } else if (event.target.name === 'Type of transport') {
+      localStorage.setItem('transport', event.target.value);
     }
   };
 
@@ -24,17 +24,15 @@ function Select(props) {
           defaultValue={30}
           inputProps={{
             name: props.name,
-            id: "uncontrolled-native",
+            id: 'uncontrolled-native',
           }}
         >
-          {props.option.map((item) => {
-            return (
-              <option value={item} key={item}>
-                {/* {localStorage.setItem("transport", item)} */}
-                {item}
-              </option>
-            );
-          })}
+          {props.option.map((item) => (
+            <option value={item} key={item}>
+              {/* {localStorage.setItem("transport", item)} */}
+              {item}
+            </option>
+          ))}
         </NativeSelect>
       </FormControl>
     </Box>
