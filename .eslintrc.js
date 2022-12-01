@@ -1,0 +1,48 @@
+module.exports = {
+  env: {
+    browser: true,
+    commonjs: true,
+    es2021: true,
+  },
+  extends: [
+    'plugin:react/recommended',
+    'airbnb',
+  ],
+  overrides: [
+  ],
+  parserOptions: {
+    ecmaVersion: 'latest',
+  },
+  plugins: [
+    'react',
+  ],
+  rules: {
+    'react/jsx-filename-extension': 'off',
+    'no-empty': 'warn',
+    'react/prop-types': 'off',
+    'react/destructuring-assignment': 'off',
+    'import/prefer-default-export': 'off',
+    'react/button-has-type': 'warn',
+    'no-shadow': 'warn',
+    'import/no-extraneous-dependencies': 'warn',
+    'jsx-a11y/click-events-have-key-events': 'off',
+    'jsx-a11y/no-noninteractive-element-interactions': 'off',
+    'no-new': 'off',
+    'react/jsx-props-no-spreading': 'off',
+    'no-case-declarations': 'off',
+    'no-restricted-syntax': 'off',
+    'no-continue': 'off',
+    'max-len': 'off',
+    'no-plusplus': 'warn',
+    'array-callback-return': 'off',
+    'prefer-destructuring': 'off',
+    'react-hooks/exhaustive-deps': 'off',
+    'implicit-arrow-linebreak': 'off',
+    'no-use-before-define': 'off',
+    'react/no-unescaped-entities': 'off',
+    'jsx-a11y/no-static-element-interactions': 'off',
+    'no-unused-vars': 'warn',
+    'no-nested-ternary': 'warn',
+    'react/jsx-no-constructed-context-values': 'off',
+  },
+};
