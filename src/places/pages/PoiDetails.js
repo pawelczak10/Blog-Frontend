@@ -39,7 +39,7 @@ function DetailsPoi() {
       const response = await axios.get(
         `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
           address,
-        )}&key=AIzaSyDdMBjsYmBP6EKIxyu4jOXdrZvLYWT8-1s`,
+        )}&key=AIzaSyAxp8dYzqa82jyxHm0c-nmG8KDwSBMpoag`,
       );
       const coordinates = response.data.results[0].geometry.location;
       const origin = `${coordinates.lat},${coordinates.lng}`;
@@ -164,7 +164,7 @@ function DetailsPoi() {
     const origin = localStorage.getItem('coordinates'); // here we get place
     try {
       const BASE_URL = 'https://api.distancematrix.ai';
-      const TOKEN = 'eiYGl6W4ug7GE82Ai6xnI04wzIXGK';
+      const TOKEN = 'UAXiScSI9fl27M1l9BY14VrhBOI6J';
 
       const trafficModel = 'best_guess';
       const departureTime = 'now';
@@ -281,6 +281,22 @@ function DetailsPoi() {
     setMarkerss([]);
     setDetails([]);
   }
+
+
+  const routeSubmitHandler = async (event) => {
+    
+    event.preventDefault();
+    try {
+      console.log(localStorage.getItem("userData").getItem("userId"))
+      formData.append('route_owner', localStorage.getItem("userData") );
+      console.log("routessss")
+      formData.append('places', locations );
+      await sendRequest('http://localhost:5000/api/routes', 'POST', formData, {
+        Authorization: `Bearer ${auth.token}`,
+      });
+      history.push('/');
+    } catch (err) {}
+  };
 
   return (
     <>
@@ -476,7 +492,7 @@ function DetailsPoi() {
                   justifyContent: 'center',
                 }}
               >
-                Export to phone
+                <Button onClick={routeSubmitHandler} >Export to phone</Button>
               </ListItemText>
             </ListItem>
           )}
