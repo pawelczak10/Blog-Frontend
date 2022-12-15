@@ -6,7 +6,7 @@ import NativeSelect from '@mui/material/NativeSelect';
 
 function Select(props) {
   const handleSelectChange = (event) => {
-    if (event.target.name === 'Type of places') {
+    if (event.target.name === 'Type of place') {
       localStorage.setItem('places', event.target.value);
     } else if (event.target.name === 'Type of transport') {
       localStorage.setItem('transport', event.target.value);

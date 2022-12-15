@@ -3,25 +3,17 @@ import { useParams } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import './PoiDetails.css';
 import axios from 'axios';
-import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import IconButton from '@mui/material/IconButton';
-import Modal from '../../shared/components/UIElements/Modal';
 import Select from '../../POI/select';
 import InputSlider from '../../POI/slider';
 import { useHttpClient } from '../../shared/hooks/http-hook';
 import Button from '../../shared/components/FormElements/Button';
-import imga from './arow.png';
+import imga from './smartphone-call.png';
 
 function DetailsPoi() {
   const { sendRequest } = useHttpClient();
-  const place = localStorage.getItem('places'); // here we get place
-  const distance = localStorage.getItem('distance'); // here we get transport
-  const transport = localStorage.getItem('transport'); // here we get transport, we need for routing
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [showRouting, setShowRouting] = useState(false);
   const [loadingData, setLoadingData] = useState(false);
   const [locations, setLocations] = useState();
   const [mapka, setMapka] = useState();
@@ -30,30 +22,35 @@ function DetailsPoi() {
   const [route, setRoute] = useState();
   const [showRoutee, setShowRoutee] = useState(false);
   const [routeListUpdate, setrouteListUpdate] = useState(false);
-  const { address } = useParams(); // here we get coordinates
-
+  const address = useParams().address; // here we get coordinates
+  const [initialAdress,setInitialAdress] = useState();
   let directionsDisplay;
 
   useEffect(() => {
+    console.log("useEffectFirst");
+    localStorage.setItem("places", "restaurant");
+    localStorage.setItem("transport", "driving");
+    localStorage.setItem("distance", "250");
     async function fetchData() {
       const response = await axios.get(
         `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
           address,
-        )}&key=AIzaSyDdMBjsYmBP6EKIxyu4jOXdrZvLYWT8-1s`,
+        )}&key=AIzaSyC-2XE_Y6V457WACQMLYmG7HYpJHf1SWQY`,
       );
       const coordinates = response.data.results[0].geometry.location;
       const origin = `${coordinates.lat},${coordinates.lng}`;
       localStorage.setItem('coordinates', origin);
+      setInitialAdress(origin);
     }
     fetchData();
-  });
-  const exitHandler = () => {
-    setShowConfirmModal(false);
-  };
-
+  },[]);
+ 
   const fetchPOI = async () => {
+    
     console.log('fetchPOI');
     const origin = localStorage.getItem('coordinates'); // here we get place
+    const place = localStorage.getItem('places');
+    const distance = localStorage.getItem('distance');
     try {
       setDetails([]);
       const responseData = await sendRequest(
@@ -105,6 +102,8 @@ function DetailsPoi() {
               });
               localStorage.setItem('coordinates', `${item.lat}, ${item.lon}`);
               printRoute(locations);
+              mapka.setCenter({ lat: item.lat, lng: item.lon });
+              mapka.setZoom(16);
               setShowRoutee(true);
               setrouteListUpdate(true);
               for (let i = 0; i < markerss.length; i++) {
@@ -158,36 +157,11 @@ function DetailsPoi() {
     });
   }
 
-  const showRoute = async (id, lat, lon) => {
-    setShowConfirmModal(true);
-
-    const origin = localStorage.getItem('coordinates'); // here we get place
-    try {
-      const BASE_URL = 'https://api.distancematrix.ai';
-      const TOKEN = 'eiYGl6W4ug7GE82Ai6xnI04wzIXGK';
-
-      const trafficModel = 'best_guess';
-      const departureTime = 'now';
-      const responseData = await sendRequest(
-        `${BASE_URL
-        }/maps/api/distancematrix/json`
-          + `?key=${TOKEN}`
-          + `&origins=${origin}`
-          + `&destinations=${lat},${lon}`
-          + `&mode=${transport}`
-          + `&traffic_model=${trafficModel}`
-          + `&departure_time=${departureTime}`,
-      );
-      // console.log(responseData.rows[0].elements[0].distance.text);
-      setRoute(responseData);
-      setShowRouting(true);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  
   const [map, setMap] = useState(0);
 
   useEffect(() => {
+    console.log("mapReload")
     if (map !== 0) {
       const startPlace = localStorage.getItem('coordinates');
       const array = startPlace.split(',');
@@ -208,18 +182,19 @@ function DetailsPoi() {
         },
         map: mapaaa,
       });
-      markerss.push(initialMarker);
+      // markerss.push(initialMarker);
       setMapka(mapaaa);
+      const street=address.split(',')
       const loc = [
         {
-          Name: 'Start',
+          Name: street[0],
           Lat: parseFloat(array[0], 10),
           Long: parseFloat(array[1], 10),
         },
       ];
       setLocations(loc);
     }
-  }, [map]);
+  }, [initialAdress]);
 
   function changeBackgroundYellow(e, element) {
     e.currentTarget.style.background = 'yellow';
@@ -250,7 +225,6 @@ function DetailsPoi() {
     });
   }
   function onClickList(e, element) {
-    console.log('You clicked me <3');
     let c = true;
     setrouteListUpdate(true);
     markerss.forEach((i) => {
@@ -282,6 +256,10 @@ function DetailsPoi() {
     setDetails([]);
   }
 
+  function exportToPhone(){
+    console.log("exportToPhone")
+  }
+
   return (
     <>
       <div className="leftPanel">
@@ -296,7 +274,10 @@ function DetailsPoi() {
           marginLeft={2}
           padding={3}
           borderRadius={5}
+  
           sx={{
+            borderStyle: 'solid',
+            borderColor:'#F48FB1',
             background: 'white',
           }}
         >
@@ -306,12 +287,12 @@ function DetailsPoi() {
             option={['driving', 'walking', 'bicycling']}
           />
           <Select
-            name="Type of places"
-            option={['restaurant', 'bar', 'school', 'fast_food', 'bank']}
+            name="Type of place"
+            option={['restaurant', 'bar', 'school', 'fast food', 'bank']}
           />
 
           <Button danger type="button" onClick={fetchPOI}>
-            SHOW DETAILS
+            SHOW PLACES
           </Button>
         </Box>
       </div>
@@ -319,11 +300,12 @@ function DetailsPoi() {
         <List
           display="flex"
           sx={{
-            overflow: 'auto',
+            overflow: 'scroll',
+            overflowX: 'hidden',
             width: '100%',
             maxHeight: 800,
             background: 'transparent',
-            margin: 'auto',
+            paddingRight: '20px',
             marginTop: '65px',
             position: 'relative',
           }}
@@ -337,24 +319,14 @@ function DetailsPoi() {
                 onMouseOver={(e) => changeBackgroundYellow(e, element)}
                 onMouseOut={(e) => changeBackgroundWhite(e, element)}
                 sx={{
+                  borderStyle: 'solid',
+                  borderColor:'#F48FB1',
                   background: 'white',
                   margin: 'auto',
                   marginTop: '10px',
                   padding: '5px',
                   borderRadius: '7px',
-
                 }}
-                secondaryAction={(
-                  <IconButton
-                    type="button"
-                    aria-label="comment"
-                    onClick={() => {
-                      showRoute(element.id, element.lat, element.lon);
-                    }}
-                  >
-                    <PersonSearchIcon />
-                  </IconButton>
-                  )}
               >
                 <ListItemText
                   sx={{ paddingLeft: '4px', background: 'transparent' }}
@@ -363,39 +335,7 @@ function DetailsPoi() {
               </ListItem>
             ))}
         </List>
-        {showRouting && (
-          <Modal
-            show={showConfirmModal}
-            header="Your route!"
-            footerClass="place-item__modal-actions"
-            footer={(
-              <Button danger onClick={exitHandler}>
-                Exit
-              </Button>
-              )}
-          >
-            Your target address is
-            {' '}
-            {route.destination_addresses}
-            .
-            <br />
-            Your starting location is
-            {' '}
-            {route.origin_addresses}
-            .
-            <br />
-            <br />
-            The distance to the target is
-              {route.rows[0].elements[0].distance.text}
-            .
-            <br />
-            You will be there in
-            {' '}
-            {route.rows[0].elements[0].duration.text}
-            .
-          </Modal>
-        )}
-
+        
       </div>
       <div className="routePanel">
         <List
@@ -404,6 +344,7 @@ function DetailsPoi() {
             background: 'transparent',
             margin: 'auto',
             marginTop: '10px',
+            marginBottom: '10px',
             padding: '3px',
             borderRadius: '7px',
             position: 'relative',
@@ -417,67 +358,54 @@ function DetailsPoi() {
             && locations.map((element) =>
               // console.log("Route",element);
               (
-                <>
                   <ListItem
                     // key={element.lat}
                     disableGutters
                     sx={{
-                      margin: '5px',
-                      background: 'white',
-                      display: 'inline-block',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: '7px',
-                      borderStyle: 'solid',
+                      display: "inline-block",
+                      position: "relative",
+                      width: "200px",
+                      height: "50px",
+                      background: "#F48FB1",
+                      boxSizing: "border-box",
+                      webkitClipPath: "polygon(90% 0, 100% 50%, 90% 100%, 0% 100%, 10% 50%, 0% 0%)",
+                      clipPath: "polygon(90% 0, 100% 50%, 90% 100%, 0% 100%, 10% 50%, 0% 0%)"
                     }}
                   >
                     <ListItemText
                       sx={{
-                        paddingLeft: '4px',
+                        paddingLeft: '30px',
                         alignItems: 'center',
                         justifyContent: 'center',
-                      }}
-                    >
+                      }}>
                       {`${element.Name}`}
                     </ListItemText>
                   </ListItem>
-                  <ListItem
-                    disableGutters
-                    sx={{
-                      width: '28px',
-
-                      display: 'inline-block',
-
-                      alignItems: 'bottom',
-                    }}
-                  >
-                    <img src={imga} alt="" height="26px" />
-                  </ListItem>
-                </>
               ))}
-          {locations === undefined ? ('') : locations.length <= 1 ? ('s') : (
-            <ListItem
-              disableGutters
-              sx={{
-                margin: '5px',
-                background: 'white',
-                borderStyle: 'solid',
-                borderColor: 'red',
-                display: 'inline-block',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: '7px',
-              }}
-            >
-              <ListItemText
-                sx={{
-                  paddingLeft: '4px',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                Export to phone
-              </ListItemText>
+
+          {locations === undefined ? ('') : locations.length <= 1 ? ('') : (
+             <ListItem disableGutters
+                  onClick={exportToPhone}
+                  sx={{
+                    cursor: "pointer",
+                    display: "inline-block",
+                    position: "relative",
+                    width: "160px",
+                    height: "50px",
+                    background: "#ff0055",
+                    boxSizing: "border-box",
+                    webkitClipPath: "polygon(100% 0, 100% 50%, 100% 100%, 0% 100%, 10% 50%, 0% 0%)",
+                    clipPath: "polygon(100% 0, 100% 50%, 100% 100%, 0% 100%, 10% 50%, 0% 0%)"
+                  }}>
+			
+                  <ListItemText
+                      sx={{
+                        paddingLeft: '30px',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}>Export to phone
+                      {/* <img src={imga} alt="" height="26px" /> */}
+                    </ListItemText>
             </ListItem>
           )}
         </List>
@@ -486,33 +414,9 @@ function DetailsPoi() {
         id="googleMap"
         className="map"
         style={{ width: '100%', height: '100%' }}
-        ref={setMap}
-      />
+        ref={setMap}/>
     </>
   );
 }
-function Map() {
-  const [map, setMap] = useState(0);
 
-  useEffect(() => {
-    if (map !== 0) {
-      console.log(map);
-      const mapaaa = new window.google.maps.Map(map, {
-        center: { lat: 51.110437, lng: 17.035019 },
-        zoom: 14,
-      });
-      const marker = new window.google.maps.Marker({
-        position: { lat: 51.109792, lng: 17.054004 },
-        map: mapaaa,
-      });
-    }
-  }, [map]);
-  return (
-    <div
-      id="googleMap"
-      style={{ width: '100%', height: '600px' }}
-      ref={setMap}
-    />
-  );
-}
 export default DetailsPoi;
