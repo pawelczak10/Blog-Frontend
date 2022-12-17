@@ -262,24 +262,21 @@ function DetailsPoi() {
   const auth = useContext(AuthContext);
   const history = useHistory();
 
-  const exportToPhone = async (event) => {
-   
-    event.preventDefault();
+  const exportToPhone= async () => {
+    console.log("exportRoute")
     try {
-      const formData = new FormData();
       const userData = JSON.parse(localStorage.getItem("userData"));
-    
-      formData.append('route_owner', userData.userId);
-      formData.append('places', locations);
-
-      console.log(formData)
-      console.log("routessss")
- 
-      await sendRequest('http://localhost:5000/api/routes', 'POST', formData, {
-        Authorization: `Bearer ${auth.token}`,
+      const response = await axios({
+        method: 'POST',
+        url:  'http://localhost:5000/api/routes',
+        headers: {Authorization : `Bearer ${auth.token}`},
+        data:  {route_owner:userData.userId, places: locations},
       });
-      history.push('/');
-    } catch (err) {}
+
+      return response;
+    } catch (error) {
+        console.log("error")
+    }
   };
 
   return (
