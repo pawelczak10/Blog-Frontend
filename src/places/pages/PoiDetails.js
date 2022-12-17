@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState , useContext} from 'react';
 import { useParams } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import './PoiDetails.css';
@@ -11,6 +11,10 @@ import InputSlider from '../../POI/slider';
 import { useHttpClient } from '../../shared/hooks/http-hook';
 import Button from '../../shared/components/FormElements/Button';
 import imga from './smartphone-call.png';
+import { AuthContext } from '../../shared/context/auth-context';
+import { useHistory } from 'react-router-dom';
+
+
 
 function DetailsPoi() {
   const { sendRequest } = useHttpClient();
@@ -255,10 +259,28 @@ function DetailsPoi() {
     setMarkerss([]);
     setDetails([]);
   }
+  const auth = useContext(AuthContext);
+  const history = useHistory();
 
-  function exportToPhone(){
-    console.log("exportToPhone")
-  }
+  const exportToPhone = async (event) => {
+   
+    event.preventDefault();
+    try {
+      const formData = new FormData();
+      const userData = JSON.parse(localStorage.getItem("userData"));
+    
+      formData.append('route_owner', userData.userId);
+      formData.append('places', locations);
+
+      console.log(formData)
+      console.log("routessss")
+ 
+      await sendRequest('http://localhost:5000/api/routes', 'POST', formData, {
+        Authorization: `Bearer ${auth.token}`,
+      });
+      history.push('/');
+    } catch (err) {}
+  };
 
   return (
     <>
