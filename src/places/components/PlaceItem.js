@@ -45,7 +45,7 @@ function PlaceItem(props) {
     setShowConfirmModal(false);
     try {
       await sendRequest(
-        `http://localhost:5000/api/places/${props.id}`,
+        `http://localhost:8000/api/places/${props.id}`,
         'DELETE',
         null,
         {
