@@ -298,10 +298,10 @@ function DetailsPoi() {
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
       const response = await axios({
-        method: "POST",
-        url: "http://localhost:5000/api/routes",
-        headers: { Authorization: `Bearer ${auth.token}` },
-        data: { route_owner: userData.userId, places: locations },
+        method: 'POST',
+        url:  'http://localhost:8000/api/routes',
+        headers: {Authorization : `Bearer ${auth.token}`},
+        data:  {route_owner:userData.userId, places: locations},
       });
 
       return response;
