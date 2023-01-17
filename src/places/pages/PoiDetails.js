@@ -140,8 +140,8 @@ function DetailsPoi() {
 
   async function onSubmit(text) {
     const configuration = new Configuration({
-      organization: process.env.ORGANIZATION,
-      apiKey: process.env.OPENAI_API_KEY,
+      organization: "org-UdIUdxaWcXque2BAqf1ClLiS",
+      apiKey: "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",
     });
     const openai = new OpenAIApi(configuration);
     const response = await openai.createCompletion({
