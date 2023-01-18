@@ -153,6 +153,8 @@ function DetailsPoi() {
     console.log(response.data.choices[0].text)
     setOutputAI(response.data.choices[0].text)
     setShowMap(true);
+    var msg = new SpeechSynthesisUtterance(response.data.choices[0].text);
+    window.speechSynthesis.speak(msg);
   }
 
 
